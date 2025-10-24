@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/aston_hw2</property>
+        <property name="hibernate.connection.username">aston_user</property>
+        <property name="hibernate.connection.password">123</property>
+
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <mapping class="com.aston.homework.entity.User"/>
+    </session-factory>
+</hibernate-configuration>

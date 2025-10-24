@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/hibernate.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%ex</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.engine.transaction" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.connection" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.aston.homework" level="Trace" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+</configuration>
