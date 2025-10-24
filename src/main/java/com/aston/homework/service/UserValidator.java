@@ -1,10 +1,13 @@
 package com.aston.homework.service;
 
+import com.aston.homework.dto.UserDtoIn;
 import com.aston.homework.entity.User;
 import com.aston.homework.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserValidator {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private static final int MIN_AGE = 0;
@@ -36,7 +39,7 @@ public class UserValidator {
         }
     }
 
-    public void validateData(User user) throws UserServiceException {
+    public void validateData(UserDtoIn user) throws UserServiceException {
         String message = null;
         if (user.getName() == null || user.getName().isBlank()) {
             message = "user name cannot be empty";
@@ -69,7 +72,7 @@ public class UserValidator {
         }
     }
 
-    public void normalizeEmail(User user) {
+    public void normalizeEmail(UserDtoIn user) {
         if (user != null) {
             user.setEmail(user.getEmail().toLowerCase());
         }
