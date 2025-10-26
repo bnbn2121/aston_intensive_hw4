@@ -1,6 +1,6 @@
 package com.aston.homework.service;
 
-import com.aston.homework.entity.User;
+import com.aston.homework.dto.UserDtoIn;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -121,7 +121,7 @@ public class UserValidatorTest {
         String name = "test";
         String email = "test@test.com";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertDoesNotThrow(() -> userValidator.validateData(user));
@@ -133,7 +133,7 @@ public class UserValidatorTest {
         String name = null;
         String email = "test@test.com";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -145,7 +145,7 @@ public class UserValidatorTest {
         String name = "";
         String email = "test@test.com";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -157,7 +157,7 @@ public class UserValidatorTest {
         String name = "   ";
         String email = "test@test.com";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -169,7 +169,7 @@ public class UserValidatorTest {
         String name = "test";
         String email = null;
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -181,7 +181,7 @@ public class UserValidatorTest {
         String name = "test";
         String email = "";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -193,7 +193,7 @@ public class UserValidatorTest {
         String name = "test";
         String email = "    ";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -205,7 +205,7 @@ public class UserValidatorTest {
         String name = "test";
         String email = "test";
         int age = 10;
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -217,7 +217,7 @@ public class UserValidatorTest {
         // Given
         String name = "test";
         String email = "test@test.com";
-        User user = new User(name, email, age);
+        UserDtoIn user = new UserDtoIn(name, email, age);
 
         // When & Then
         assertThrows(UserServiceException.class, () -> userValidator.validateData(user));
@@ -253,7 +253,7 @@ public class UserValidatorTest {
     void shouldNormalizeEmailWithUser(){
         // Given
         String email = "TeSt@test.COM";
-        User user = new User("name", email, 10);
+        UserDtoIn user = new UserDtoIn("name", email, 10);
 
         // When
         userValidator.normalizeEmail(user);

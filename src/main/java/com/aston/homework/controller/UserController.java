@@ -58,7 +58,15 @@ public class UserController {
     }
 
     private ResponseEntity<?> sendResponseIfException(Exception e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        HttpStatus status = null;
+        if (e.getMessage().contains("not found")) {
+            status = HttpStatus.NOT_FOUND;
+        } else if (e.getMessage().contains("email exists") || e.getMessage().contains("email already used")) {
+            status = HttpStatus.CONFLICT;
+        } else {
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return ResponseEntity.status(status).body(e.getMessage());
     }
 
 }
