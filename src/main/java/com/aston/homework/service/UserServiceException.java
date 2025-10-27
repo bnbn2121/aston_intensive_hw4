@@ -1,6 +1,6 @@
 package com.aston.homework.service;
 
-public class UserServiceException extends Exception {
+public class UserServiceException extends RuntimeException {
     public UserServiceException() {
     }
 
