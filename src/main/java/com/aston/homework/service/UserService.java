@@ -2,7 +2,6 @@ package com.aston.homework.service;
 
 import com.aston.homework.dto.UserDtoIn;
 import com.aston.homework.dto.UserDtoOut;
-import com.aston.homework.entity.User;
 
 public interface UserService {
     UserDtoOut getUserById(int id) throws UserServiceException;

@@ -1,9 +1,11 @@
 package com.aston.homework.controller;
 
+import com.aston.homework.dto.EventName;
 import com.aston.homework.dto.UserDtoIn;
 import com.aston.homework.dto.UserDtoOut;
 import com.aston.homework.service.UserService;
 import com.aston.homework.service.UserServiceException;
+import com.aston.homework.service.impl.KafkaProducerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
+
+    @MockitoBean
+    private KafkaProducerService kafkaProducerService;
 
     private UserDtoIn createTestUserDtoIn() {
         return new UserDtoIn("test", "test@test.com", 25);
@@ -80,6 +85,7 @@ public class UserControllerTest {
         UserDtoOut userDtoOut = createTestUserDtoOut();
 
         when(userService.addUser(any(UserDtoIn.class))).thenReturn(userDtoOut);
+        doNothing().when(kafkaProducerService).sendEvent(EventName.CREATE, userDtoOut);
 
         // When & Then
         mockMvc.perform(post("/app")
@@ -92,6 +98,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.age").value(userDtoOut.getAge()))
                 .andExpect(jsonPath("$.createdAt").exists());
         verify(userService).addUser(any(UserDtoIn.class));
+        verify(kafkaProducerService).sendEvent(EventName.CREATE, userDtoOut);
     }
 
     @Test
@@ -108,6 +115,7 @@ public class UserControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(content().string("saving user is unavailable, such email exists"));
         verify(userService).addUser(any(UserDtoIn.class));
+        verify(kafkaProducerService, never()).sendEvent(any(EventName.class), any(UserDtoOut.class));
     }
 
     @Test
@@ -153,14 +161,19 @@ public class UserControllerTest {
     void shouldDeleteUserSuccess() throws Exception {
         // Given
         int id = 1;
+        UserDtoOut userDtoOut = createTestUserDtoOut();
 
+        when(userService.getUserById(id)).thenReturn(userDtoOut);
         when(userService.deleteUser(id)).thenReturn(true);
+        doNothing().when(kafkaProducerService).sendEvent(EventName.DELETE, userDtoOut);
 
         // When & Then
         mockMvc.perform(delete("/app/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("success delete: true"));
+        verify(userService).getUserById(id);
         verify(userService).deleteUser(id);
+        verify(kafkaProducerService).sendEvent(EventName.DELETE, userDtoOut);
     }
 
     @Test
@@ -168,11 +181,13 @@ public class UserControllerTest {
         // Given
         int id = 1;
 
-        when(userService.deleteUser(id)).thenThrow(new UserServiceException("error"));
+        when(userService.getUserById(id)).thenThrow(new UserServiceException("error"));
 
         // When & Then
         mockMvc.perform(delete("/app/1"))
                 .andExpect(status().isBadRequest());
-        verify(userService).deleteUser(id);
+        verify(userService).getUserById(id);
+        verify(userService, never()).deleteUser(anyInt());
+        verify(kafkaProducerService, never()).sendEvent(any(EventName.class), any(UserDtoOut.class));
     }
 }

@@ -1,7 +1,6 @@
 package com.aston.homework.service;
 
 import com.aston.homework.dto.UserDtoIn;
-import com.aston.homework.entity.User;
 import com.aston.homework.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
