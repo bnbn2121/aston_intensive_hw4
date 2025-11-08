@@ -1,12 +1,24 @@
 package com.aston.homework.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 
 public class UserDtoOut {
+
+    @Schema(description = "ID пользователя")
     private int id;
+
+    @Schema(description = "Имя пользователя")
     private String name;
+
+    @Schema(description = "Адрес электнонной почты пользователя")
     private String email;
+
+    @Schema(description = "Возраст пользователя")
     private int age;
+
+    @Schema(description = "Дата регистрации пользователя")
     private LocalDateTime createdAt;
 
     public UserDtoOut() {

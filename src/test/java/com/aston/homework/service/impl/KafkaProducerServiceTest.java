@@ -29,7 +29,7 @@ public class KafkaProducerServiceTest {
     private KafkaTemplate<String, EventDto> kafkaTemplate;
 
     @InjectMocks
-    private KafkaProducerService kafkaProducerService;
+    private KafkaProducerServiceImpl kafkaProducerService;
 
     @BeforeEach
     void setUp() {

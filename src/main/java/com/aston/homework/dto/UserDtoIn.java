@@ -1,8 +1,16 @@
 package com.aston.homework.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class UserDtoIn {
+
+    @Schema(description = "Имя пользователя")
     private String name;
+
+    @Schema(description = "Адрес электнонной почты пользователя")
     private String email;
+
+    @Schema(description = "Возраст пользователя")
     private Integer age;
 
     public UserDtoIn() {

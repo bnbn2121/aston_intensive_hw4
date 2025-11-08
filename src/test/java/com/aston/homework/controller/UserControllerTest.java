@@ -5,7 +5,7 @@ import com.aston.homework.dto.UserDtoIn;
 import com.aston.homework.dto.UserDtoOut;
 import com.aston.homework.service.UserService;
 import com.aston.homework.service.UserServiceException;
-import com.aston.homework.service.impl.KafkaProducerService;
+import com.aston.homework.service.impl.KafkaProducerServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +33,7 @@ public class UserControllerTest {
     private UserService userService;
 
     @MockitoBean
-    private KafkaProducerService kafkaProducerService;
+    private KafkaProducerServiceImpl kafkaProducerService;
 
     private UserDtoIn createTestUserDtoIn() {
         return new UserDtoIn("test", "test@test.com", 25);
@@ -56,13 +57,16 @@ public class UserControllerTest {
         when(userService.getUserById(id)).thenReturn(userDtoOut);
 
         // When & Then
-        mockMvc.perform(get("/app/1"))
+        mockMvc.perform(get("/app/%d".formatted(id)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userDtoOut.getId()))
                 .andExpect(jsonPath("$.name").value(userDtoOut.getName()))
                 .andExpect(jsonPath("$.email").value(userDtoOut.getEmail()))
                 .andExpect(jsonPath("$.age").value(userDtoOut.getAge()))
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$._links.self.href").value(containsString("/app/%d".formatted(id))))
+                .andExpect(jsonPath("$._links.update.href").value(containsString("/app/%d".formatted(id))))
+                .andExpect(jsonPath("$._links.delete.href").value(containsString("/app/%d".formatted(id))));
     }
 
     @Test
@@ -96,7 +100,10 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(userDtoOut.getName()))
                 .andExpect(jsonPath("$.email").value(userDtoOut.getEmail()))
                 .andExpect(jsonPath("$.age").value(userDtoOut.getAge()))
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$._links.self.href").value(containsString("/app/%d".formatted(userDtoOut.getId()))))
+                .andExpect(jsonPath("$._links.update.href").value(containsString("/app/%d".formatted(userDtoOut.getId()))))
+                .andExpect(jsonPath("$._links.delete.href").value(containsString("/app/%d".formatted(userDtoOut.getId()))));
         verify(userService).addUser(any(UserDtoIn.class));
         verify(kafkaProducerService).sendEvent(EventName.CREATE, userDtoOut);
     }
@@ -136,7 +143,10 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(userDtoOut.getName()))
                 .andExpect(jsonPath("$.email").value(userDtoOut.getEmail()))
                 .andExpect(jsonPath("$.age").value(userDtoOut.getAge()))
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andExpect(jsonPath("$._links.self.href").value(containsString("/app/%d".formatted(id))))
+                .andExpect(jsonPath("$._links.update.href").value(containsString("/app/%d".formatted(id))))
+                .andExpect(jsonPath("$._links.delete.href").value(containsString("/app/%d".formatted(id))));
         verify(userService).updateUserById(eq(id), any(UserDtoIn.class));
     }
 
@@ -170,7 +180,8 @@ public class UserControllerTest {
         // When & Then
         mockMvc.perform(delete("/app/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("success delete: true"));
+                .andExpect(jsonPath("$.['delete result']").value(true))
+                .andExpect(jsonPath("$._links.create.href").value(containsString("/app")));
         verify(userService).getUserById(id);
         verify(userService).deleteUser(id);
         verify(kafkaProducerService).sendEvent(EventName.DELETE, userDtoOut);
