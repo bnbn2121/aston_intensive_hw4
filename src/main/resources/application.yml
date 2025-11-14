@@ -1,17 +1,5 @@
-app:
-  kafka:
-    enabled: false
-
 spring:
-  datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/aston_hw2
-    username: aston_user
-    password: 123
-    driver-class-name: org.postgresql.Driver
-
-jpa:
-  hibernate:
-    ddl-auto: update
-  properties:
-    hibernate:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: user-service
+  config:
+    import: "configserver:http://localhost:8888"
