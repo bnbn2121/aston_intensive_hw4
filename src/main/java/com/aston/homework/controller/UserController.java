@@ -5,11 +5,11 @@ import com.aston.homework.dto.UserDtoIn;
 import com.aston.homework.dto.UserDtoOut;
 import com.aston.homework.service.KafkaProducerService;
 import com.aston.homework.service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 @RequestMapping("/app")
 @Tag(name = "User-service API", description = "CRUD операции с пользователями")
+@CircuitBreaker(name = "userService")
 public class UserController {
     private final UserService userService;
     private final KafkaProducerService kafkaProducerService;
@@ -40,6 +41,7 @@ public class UserController {
         response.add(linkTo(methodOn(UserController.class).getUserById(id)).withSelfRel());
         response.add(linkTo(methodOn(UserController.class).updateUserById(id, null)).withRel("update"));
         response.add(linkTo(methodOn(UserController.class).removeUserById(id)).withRel("delete"));
+        System.out.println("гет метод успешный");
         return ResponseEntity.ok(response);
     }
 
@@ -83,5 +85,10 @@ public class UserController {
         EntityModel<Map<String, Boolean>> response = EntityModel.of(Map.of("delete result", isDelete));
         response.add(linkTo(methodOn(UserController.class).addUser(null)).withRel("create"));
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/ex")
+    public ResponseEntity<EntityModel<UserDtoOut>> testMethod() {
+        throw new RuntimeException("это ошибка какая-то");
     }
 }
